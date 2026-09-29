@@ -42,6 +42,7 @@ const HELPLINES = [
 
 function Support() {
   const [result, setResult] = useState<EpdsResult | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
   useEffect(() => {
     setResult(loadResult());
@@ -78,9 +79,7 @@ function Support() {
     document.body.appendChild(a);
     a.click();
     a.remove();
-    // Fallback for embedded previews that block downloads: open the PDF in a new tab
-    if (window.self !== window.top) window.open(url, "_blank");
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    setPdfUrl(url);
   }
 
   return (
@@ -143,6 +142,20 @@ function Support() {
           >
             Download my check-in summary
           </button>
+          {pdfUrl && (
+            <p className="mt-3 text-center text-sm text-muted-foreground">
+              Didn't download?{" "}
+              <a
+                href={pdfUrl}
+                target="_blank"
+                rel="noopener"
+                download="mamacare-check-in.pdf"
+                className="text-primary underline"
+              >
+                Open your summary PDF
+              </a>
+            </p>
+          )}
         </section>
       </main>
     </div>
