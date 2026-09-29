@@ -98,3 +98,18 @@
   padding: 20px;
   box-shadow: var(--shadow-soft);
 }
+
+@keyframes sticker-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -6px;
+  }
+}
+
+.sticker-float {
+  animation: sticker-float 5s ease-in-out infinite;
+  rotate: var(--sticker-rotate, 0deg);
+}

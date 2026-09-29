@@ -1,10 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { jsPDF } from "jspdf";
-import { useEffect, useState } from "react";
 
+import { Stickers } from "@/components/Stickers";
 import { TabBar } from "@/components/TabBar";
-import { Button } from "@/components/ui/button";
-import { loadResult, RISK_LABEL, type EpdsResult } from "@/lib/epds";
 
 export const Route = createFileRoute("/support")({
   head: () => ({
@@ -45,51 +42,19 @@ const HELPLINES = [
 ];
 
 function Support() {
-  const [result, setResult] = useState<EpdsResult | null>(null);
-  const [pdfData, setPdfData] = useState<string | null>(null);
-
-  useEffect(() => {
-    setResult(loadResult());
-  }, []);
-
-  function createSummaryPdf() {
-    const doc = new jsPDF();
-    const date = result ? new Date(result.date) : new Date();
-    doc.setFontSize(20);
-    doc.text("MamaCare check-in summary", 20, 28);
-    doc.setFontSize(12);
-    doc.text(`Date: ${date.toLocaleDateString()}`, 20, 46);
-    doc.text(
-      result
-        ? `EPDS score: ${result.total} of 30`
-        : "EPDS score: no check-in completed on this device yet",
-      20,
-      58,
-    );
-    if (result) {
-      doc.text(`Risk level: ${RISK_LABEL[result.level]}`, 20, 70);
-      doc.text(`Note: ${result.message}`, 20, 82);
-      if (result.urgent) {
-        doc.text("Flag: answered yes to thoughts of self-harm (question 10).", 20, 94);
-      }
-    }
-    doc.text("Please bring this to your doctor.", 20, result?.urgent ? 112 : 100);
-    return doc;
-  }
-
-  function downloadSummary() {
-    const doc = createSummaryPdf();
-    setPdfData(doc.output("datauristring"));
-    doc.save("mamacare-check-in.pdf");
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <TabBar />
-      <main className="mx-auto max-w-2xl px-4 pb-16 pt-8">
-        <h1 className="text-2xl text-foreground sm:text-3xl">You deserve support.</h1>
+      <main className="relative mx-auto max-w-2xl px-4 pb-16 pt-8">
+        <Stickers page="support" />
+        <h1 className="text-2xl text-foreground sm:text-3xl">
+          You deserve support.{" "}
+          <span className="sticker-float inline-block" style={{ ["--sticker-rotate" as string]: "8deg" }}>
+            🌷
+          </span>
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          These lines are free and confidential. Reaching out is a strong, loving thing to do.
+          These lines are free and confidential. Reaching out is a strong, loving thing to do. 🤍
         </p>
 
         <div className="mt-6 space-y-3">
@@ -128,38 +93,9 @@ function Support() {
           </div>
         </div>
 
-        <section className="mt-8 card-soft">
-          <h2 className="text-lg text-card-foreground">Bring it to your doctor</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {result
-              ? `Latest check-in: ${result.total} of 30 · ${RISK_LABEL[result.level]} · ${new Date(
-                  result.date,
-                ).toLocaleDateString()}`
-              : "Complete a check-in first and your score will appear here."}
-          </p>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={downloadSummary}
-            className="mt-4 h-12 w-full rounded-full px-6"
-          >
-            Download my check-in summary
-          </Button>
-          {pdfData && (
-            <p className="mt-3 text-center text-sm text-muted-foreground">
-              Didn't download?{" "}
-              <a
-                href={pdfData}
-                target="_blank"
-                rel="noopener"
-                download="mamacare-check-in.pdf"
-                className="text-primary underline"
-              >
-                Tap here to open or save your PDF
-              </a>
-            </p>
-          )}
-        </section>
+        <p className="mt-8 text-center text-sm text-muted-foreground">
+          Whoever you call, they will be glad you did. 🌼
+        </p>
       </main>
     </div>
   );
