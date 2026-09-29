@@ -41,7 +41,7 @@ function CheckIn() {
   const [answers, setAnswers] = useState<number[]>([]);
   const [result, setResult] = useState<EpdsResult | null>(null);
 
-  const question = EPDS_QUESTIONS[step];
+  const question = EPDS_QUESTIONS[step]!;
   const done = answers.length === EPDS_QUESTIONS.length;
 
   function choose(score: number) {
