@@ -70,7 +70,17 @@ function Support() {
       }
     }
     doc.text("Please bring this to your doctor.", 20, result?.urgent ? 112 : 100);
-    doc.save("mamacare-check-in.pdf");
+    const blob = doc.output("blob");
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "mamacare-check-in.pdf";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    // Fallback for embedded previews that block downloads: open the PDF in a new tab
+    if (window.self !== window.top) window.open(url, "_blank");
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
   }
 
   return (
