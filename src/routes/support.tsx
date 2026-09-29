@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { jsPDF } from "jspdf";
 import { useEffect, useState } from "react";
 
 import { TabBar } from "@/components/TabBar";
+import { Button } from "@/components/ui/button";
 import { loadResult, RISK_LABEL, type EpdsResult } from "@/lib/epds";
 
 export const Route = createFileRoute("/support")({
@@ -18,6 +20,8 @@ export const Route = createFileRoute("/support")({
         property: "og:description",
         content: "Postpartum helplines and a check-in summary for your doctor.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Support,
@@ -42,14 +46,13 @@ const HELPLINES = [
 
 function Support() {
   const [result, setResult] = useState<EpdsResult | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfData, setPdfData] = useState<string | null>(null);
 
   useEffect(() => {
     setResult(loadResult());
   }, []);
 
-  async function downloadSummary() {
-    const { jsPDF } = await import("jspdf");
+  function createSummaryPdf() {
     const doc = new jsPDF();
     const date = result ? new Date(result.date) : new Date();
     doc.setFontSize(20);
@@ -71,15 +74,13 @@ function Support() {
       }
     }
     doc.text("Please bring this to your doctor.", 20, result?.urgent ? 112 : 100);
-    const blob = doc.output("blob");
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "mamacare-check-in.pdf";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setPdfUrl(url);
+    return doc;
+  }
+
+  function downloadSummary() {
+    const doc = createSummaryPdf();
+    setPdfData(doc.output("datauristring"));
+    doc.save("mamacare-check-in.pdf");
   }
 
   return (
@@ -136,23 +137,25 @@ function Support() {
                 ).toLocaleDateString()}`
               : "Complete a check-in first and your score will appear here."}
           </p>
-          <button
+          <Button
+            type="button"
+            variant="secondary"
             onClick={downloadSummary}
-            className="mt-4 h-12 w-full rounded-full bg-secondary px-6 text-sm text-secondary-foreground"
+            className="mt-4 h-12 w-full rounded-full px-6"
           >
             Download my check-in summary
-          </button>
-          {pdfUrl && (
+          </Button>
+          {pdfData && (
             <p className="mt-3 text-center text-sm text-muted-foreground">
               Didn't download?{" "}
               <a
-                href={pdfUrl}
+                href={pdfData}
                 target="_blank"
                 rel="noopener"
                 download="mamacare-check-in.pdf"
                 className="text-primary underline"
               >
-                Open your summary PDF
+                Tap here to open or save your PDF
               </a>
             </p>
           )}
