@@ -20,7 +20,7 @@ export const sendChat = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => schema.parse(data))
   .handler(async ({ data }) => {
     const msgs = [{ role: "system", content: SYSTEM_PROMPT }, ...data.messages];
-    const attempts: { url: string; key?: string; model: string }[] = [
+    const attempts: { url: string; key: string | undefined; model: string }[] = [
       {
         url: "https://api.deepseek.com/chat/completions",
         key: process.env["DEEPSEEK_API_KEY"],
