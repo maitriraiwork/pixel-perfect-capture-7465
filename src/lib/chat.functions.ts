@@ -22,9 +22,9 @@ export const sendChat = createServerFn({ method: "POST" })
     const msgs = [{ role: "system", content: SYSTEM_PROMPT }, ...data.messages];
     const attempts: { url: string; key: string | undefined; model: string }[] = [
       {
-        url: "https://api.deepseek.com/chat/completions",
-        key: process.env["DEEPSEEK_API_KEY"],
-        model: "deepseek-chat",
+        url: "https://api.groq.com/openai/v1/chat/completions",
+        key: process.env["GROQ_API_KEY"],
+        model: "llama-3.3-70b-versatile",
       },
       {
         url: "https://ai.gateway.lovable.dev/v1/chat/completions",
